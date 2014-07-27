@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}
+	{% if request.endpoint == 'user_timeline' %}
+		{% if g.user.id == profile_user.id %}
+			Your profile
+		{% else %}
+			{{ profile_user.username }}'s Profile
+		{% endif %}
+	{% else %}
+		News Feed
+	{% endif %}
+{% endblock %}
+{% block body %}
+	<h2>{{ self.title() }}</h2>
+	{% if request.endpoint == 'user_timeline' %}
+	<div class=followstatus>
+		{% if g.user.id == profile_user.id %}
+			This is you
+		{% elif followed %}
+			You are currently following this user
+			<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+		{% else %}
+			You are not currently following this user
+			<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+		{% endif %}
+	</div>
+	{% elif request.endpoint == 'timeline' %}
+		<div class=twitbox>
+			<h3>What's on your mind, {{ g.user.username}}?</h3>
+			<form action="{{ url_for('add_post') }}" method=POST>
+				<p><input type=text name=text size=140><input type=submit value='Share'></p>
+			</form>
+		</div>
+	{% endif %}
+	<ul class=posts>
+		{% for post in posts %}
+		<li><img src="{{ gravatar_url(post.user.email,48) }}"><p>
+			<strong>
+				<a href="{{ url_for(user_timeline, username=post.user.username) }}">post.user.username</a>
+			</strong>
+			{{ post.body }}
+			<small>&mdsh; {{ format_datetime(message.pub_date) }}</small>
+			post.user.email
+		{% else %}
+			<li><em>There's no message so far.</em>
+		{% endfor %}
+	</ul>
+{% endblock %}

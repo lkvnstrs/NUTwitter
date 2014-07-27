@@ -1,0 +1,18 @@
+Templates to write:
+- login.html
+- splash.html ( replaces public feed )
+- timeline.html
+Note: password2 changed to confirm_password
+Note: messages CSS class changed to posts
+
+Bonus projects:
+- Week one: learn about list comprehensions
+- Add the ability to click on and view a person's followers/following
+- Add a salt to the hash (make it very known that just hashing passwords does not make the database safe)
+- Add regex for email
+- Add search function by user
+- Add nice error pages
+- Upload your own profile picture
+
+TO ADD
+- To lower on username and email
