@@ -1,10 +1,3 @@
-Templates to write:
-- login.html
-- splash.html ( replaces public feed )
-- timeline.html
-Note: password2 changed to confirm_password
-Note: messages CSS class changed to posts
-
 Bonus projects:
 - Week one: learn about list comprehensions
 - Add the ability to click on and view a person's followers/following
@@ -14,5 +7,10 @@ Bonus projects:
 - Add nice error pages
 - Upload your own profile picture
 
-TO ADD
-- To lower on username and email
+To do
+- Ensure lower() applied to each instance of email/user for database retrieve
+
+First start:
+- Set the database location
+- Import db and run create_all()
+- Run app

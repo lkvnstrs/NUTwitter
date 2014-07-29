@@ -4,11 +4,10 @@
 <div class=page>
 
 	<h1>NUTwitter</h1>
-
 	<div class=navigation>
 	{% if g.user %}
 		<a href="{{ url_for('timeline') }}">Home</a> | 
-		<a href="{{ url_for(g.user.username) }}">My Profile</a> | 
+		<a href="{{ g.user.username }}">My Profile</a> |
 		<a href="{{ url_for('logout') }}">Sign Out [{{ g.user.username }}]</a>
 	{% else %}
 		<a href="{{ url_for('timeline') }}">Home</a> |

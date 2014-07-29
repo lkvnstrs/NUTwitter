@@ -6,7 +6,7 @@ import hashlib
 import uuid
 
 # CONFIG #
-DATABASE = 'sqlite:////tmp/nu_twitter.db'
+DATABASE = 'sqlite:///./nu_twitter.db'
 SECRET_KEY = 'shhdonttell' # flask.session requires this
 PER_PAGE = 30
 DEBUG = True
@@ -33,11 +33,11 @@ def timeline():
         return render_template('splash.html')
 
     # Get a list of the logged-in user's id and his/her followings
-    # This is probably the hardest database thing you'll have to do for this project
+    # This is probably the hardest database thing you'll have to do for this project, so ask many questions
     user_ids = [session['user_id']] + [f.whom_id for f in db.session.query(followers).all() if f.who_id == session['user_id']]
     conditions = ['Post.user_id == %s' % (u,) for u in user_ids]
     condition = ' OR '.join(conditions)
-    return render_template('timeline.html', posts=db.session.query(Post).filter(condition).order_by(Post.pub_date).limit(PER_PAGE))
+    return render_template('timeline.html', posts=db.session.query(Post).filter(condition).order_by(Post.pub_date).limit(PER_PAGE).all())
 
 @app.route('/<username>')
 def user_timeline(username):
@@ -50,7 +50,7 @@ def user_timeline(username):
     if g.user:
         followed = db.session.query(followers).filter_by(who_id=session['user_id'], whom_id=profile_user.id).first() is not None
     return render_template('timeline.html', posts=profile_user.posts.limit(PER_PAGE), 
-    	followed=followed, user=profile_user)
+    	followed=followed, profile_user=profile_user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -106,8 +106,11 @@ def register():
         	user = create_user(request.form['username'].lower(), request.form['email'].lower(), request.form['password'])
         	flash('You were successfully registered')
         	# Log in the user and redirect to their home page
-        	session['user_id'] = user.id
-        	return redirect(url_for('timeline'))
+        	#session['user_id'] = user.id
+        	#return redirect(url_for('timeline'))
+
+        	# Redirect to the login page
+        	return redirect(url_for('login'))
 
     return render_template('register.html', errors=errors)
 
