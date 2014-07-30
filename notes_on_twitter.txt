@@ -6,6 +6,8 @@ Bonus projects:
 - Add search function by user
 - Add nice error pages
 - Upload your own profile picture
+- Add a favicon
+- Add timezone support
 
 To do
 - Ensure lower() applied to each instance of email/user for database retrieve

@@ -37,7 +37,7 @@ def timeline():
     user_ids = [session['user_id']] + [f.whom_id for f in db.session.query(followers).all() if f.who_id == session['user_id']]
     conditions = ['Post.user_id == %s' % (u,) for u in user_ids]
     condition = ' OR '.join(conditions)
-    return render_template('timeline.html', posts=db.session.query(Post).filter(condition).order_by(Post.pub_date).limit(PER_PAGE).all())
+    return render_template('timeline.html', posts=db.session.query(Post).filter(condition).order_by(Post.pub_date.desc()).limit(PER_PAGE).all())
 
 @app.route('/<username>')
 def user_timeline(username):
@@ -130,7 +130,7 @@ def follow_user(username):
     if user_to_follow is None:
         abort(404)
 
-    if not g.user.is_following(user_to_follow):
+    if not is_following(g.user, user_to_follow):
 	    g.user.followed.append(user_to_follow)
 	    db.session.add(g.user)
 	    db.session.commit()
@@ -148,7 +148,7 @@ def unfollow_user(username):
     if user_to_follow is None:
         abort(404)
 
-    if g.user.is_following(user_to_follow):
+    if is_following(g.user, user_to_follow):
     	g.user.followed.remove(user_to_follow)
     	db.session.add(g.user)
     	db.session.commit()
@@ -173,7 +173,7 @@ def all_users():
 	users = db.session.query(User).all()
 	return render_template('users.html')
 
-# ADDITIONAL METHODS #
+# USEFUL METHODS #
 def create_user(username, email, password):
 	"""Creates a user"""
 	password_digest, salt = digest_password(password)
@@ -196,20 +196,24 @@ def digest_password(pw):
 
 def check_password_hash(digest, salt, pw):
 	"""Checks a given password against the digest in the database"""
-	return ((hashlib.sha512(pw + salt).hexdigest(), uuid.uuid4().hex) == digest)
+	return (hashlib.sha512(pw + salt).hexdigest() == digest)
 
 def gravatar_url(email, size=80):
     """Return the gravatar image for the given email address"""
     return 'http://www.gravatar.com/avatar/%s?d=identicon&s=%d' % \
-        (md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
+        (hashlib.md5(email.strip().lower().encode('utf-8')).hexdigest(), size)
 
 def format_datetime(timestamp):
     """Format a timestamp for display"""
-    return datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d @ %H:%M')
+    return timestamp.strftime('%Y-%m-%d @ %H:%M')
 
-def is_following(self, user):
-	"""Checks if a user is following another user"""
-	return self.followed.filter(followers.c.followed_id == user.id).count() > 0
+def is_following(follower_user, followed_user):
+    """Checks if follower_user is following followed_user"""
+    return follower_user.followed.filter(followers.c.whom_id == followed_user.id).count() > 0
+
+# JINJA FILTERS #
+app.jinja_env.filters['datetimeformat'] = format_datetime
+app.jinja_env.filters['gravatar'] = gravatar_url
 
 # MODELS #
 

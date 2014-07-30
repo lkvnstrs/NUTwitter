@@ -34,15 +34,15 @@
 	{% endif %}
 	<ul class=posts>
 		{% for post in posts %}
-		<li><img src="{{ gravatar_url(post.user.email,48) }}"><p>
+		<li><img src="{{ post.user.email|gravatar(size=48) }}"><p>
 			<strong>
-				<a href="{{ url_for(user_timeline, username=post.user.username) }}">post.user.username</a>
+				<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
 			</strong>
 			{{ post.body }}
-			<small>&mdsh; {{ format_datetime(message.pub_date) }}</small>
-			post.user.email
+			<small>{{ post.pub_date | datetimeformat }}</small>
+			{{ post.user.email }}
 		{% else %}
-			<li><em>There's no message so far.</em>
+			<li><em>There are no messages so far.</em>
 		{% endfor %}
 	</ul>
 {% endblock %}
