@@ -7,7 +7,7 @@ Bonus projects:
 - Add nice error pages
 - Upload your own profile picture
 - Add a favicon
-- Add timezone support
+- Add timezone supports
 
 To do
 - Ensure lower() applied to each instance of email/user for database retrieve

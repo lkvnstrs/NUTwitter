@@ -1,18 +1,25 @@
 {% extends "layout.html" %}
 {% block title %}Sign In{% endblock %}
 {% block body %}
+<div class="container">
+	<div class="row">
+		<h1 class="center form_heading">Sign In</h1>
+		<div class="col-md-6 col-md-offset-3">
+			<!--Check for/display errors-->
+			{% if error %}
+			<p id="error_explanation">Whoops:</p><ul id="error_explanation"><li>{{ error }}</li></ul>
+			{% endif %}
 
-	<h2>Sign In</h2>
-	<!--Check for/display errors-->
-	{% if error %}<div class=error>{{ error }} </div>{% endif %}
-
-	<form action="" method=POST>
-		<dl>
-			<dt>Username:
-			<dd><input type=text name=username size=30 value="{{ request.form.username }}">
-			<dt>Password:
-			<dd><input type=password name=password size=30>
-		</dl>
-		<div class=actions><input type=submit value="Sign in"></div>
-	</form>
+			<form action="" method=POST>
+				<dl>
+					<dt>Username:
+					<dd><input type=text name=username size=30 value="{{ request.form.username }}">
+					<dt>Password:
+					<dd><input type=password name=password size=30>
+				</dl>
+				<div class="actions col-md-6 col-md-offset-3"><input class="btn btn-primary btn-lg" type=submit value="Sign in"></div>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock %}

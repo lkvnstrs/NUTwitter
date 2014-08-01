@@ -1,40 +1,48 @@
-<title>{% block title %}Welcome{% endblock %} | NUTwitter</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-
-<div class=page>
-
-	<h1>NUTwitter</h1>
-	<div class=navigation>
-	{% if g.user %}
-		<a href="{{ url_for('timeline') }}">Home</a> | 
-		<a href="{{ g.user.username }}">My Profile</a> |
-		<a href="{{ url_for('logout') }}">Sign Out [{{ g.user.username }}]</a>
-	{% else %}
-		<a href="{{ url_for('timeline') }}">Home</a> |
-		<a href="{{ url_for('register') }}">Sign Up</a> |
-		<a href="{{ url_for('login') }}">Sign In</a>
-	{% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{% block title %}Welcome{% endblock %} | NUTwitter</title>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-twttr-rendered="true">
+	<div class="navbar-inverse" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="{{ url_for('timeline') }}">NUTwitter</a>
+			</div>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					{% if g.user %}
+						<li><a href="{{ url_for('timeline') }}">Home</a></li>
+						<li><a href="{{ g.user.username }}">My Profile</a></li>
+						<li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+					{% else %}
+						<li><a href="{{ url_for('timeline') }}">Home</a></li>
+						<li><a href="{{ url_for('register') }}">Sign Up</a></li>
+						<li><a href="{{ url_for('login') }}">Sign In</a></li>
+					{% endif %}
+				</ul>
+			</div>
+		</div>
 	</div>
 
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
+	<div class="flashes">
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				<p>{{ ' | '.join(messages) }}</p>
+			{% endif %}
 
-		<ul class=flashes>
-		{% for message in messages %}
-			<li>{{ message }}</li>
-		{% endfor %}
-		</ul>
-
-		{% endif %}
-
-	{% endwith %}
-
-	<div class=body>
+		{% endwith %}
+	</div>
 	{% block body %}{% endblock %}
-	</div>
 
-	<div class=footer>
-		NUTwitter - Built as part of <a href="http://northeastern.io">Northeastern.io</a>
+	<div class="container">
+		<hr>
+		<footer>
+			<p class="align_left">NUTwitter - Built as part of <a href="http://northeastern.io">Northeastern.io</a></p>
+			<p class="align_right">Directed by <a href="https://github.com/lkvnstrs">Luke Van Seters</a> and <a href="https://github.com/arjunblj">Arjun Balaji</a>
+		</footer>
 	</div>
-
-</div>
+</body>
+</html>

@@ -55,17 +55,17 @@ def user_timeline(username):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Logs the user in"""
-    if g.user:
+    if g.user is not None:
         return redirect(url_for('timeline'))
     error = None
 
     if request.method == 'POST':
         user = db.session.query(User).filter_by(username=request.form['username'].lower()).first()
         if user is None:
-            error = 'Invalid username. Try again'
+            error = 'Invalid username'
         elif not check_password_hash(user.password_digest, user.salt,
                                      request.form['password']):
-            error = 'Invalid password. Try again'
+            error = 'Invalid password'
         else:
             flash('Logged in')
             session['user_id'] = user.id
@@ -91,7 +91,7 @@ def register():
         if not request.form['email']:
             errors.append('You have to enter an email address')
         elif '@' not in request.form['email']:
-        	errors.append('Invalid email address. Try again')
+        	errors.append('Invalid email address')
         elif db.session.query(User).filter_by(email=request.form['email'].lower()).first() is not None:
         	errors.append('That email is already in use')
 
@@ -117,7 +117,7 @@ def register():
 @app.route('/logout')
 def logout():
     """Logs the user out"""
-    flash('You were logged out')
+    #flash('You were logged out')
     session.pop('user_id', None)
     return redirect(url_for('timeline'))
 
@@ -134,9 +134,9 @@ def follow_user(username):
 	    g.user.followed.append(user_to_follow)
 	    db.session.add(g.user)
 	    db.session.commit()
-	    flash('You are now following "%s"' % username)
+	    flash('You are now following %s' % username)
     else:
-    	flash('You are already following "%s"' % username)
+    	flash('You are already following %s' % username)
     return redirect(url_for('user_timeline', username=username))
 
 @app.route('/<username>/unfollow')
@@ -152,9 +152,9 @@ def unfollow_user(username):
     	g.user.followed.remove(user_to_follow)
     	db.session.add(g.user)
     	db.session.commit()
-    	flash('You are no longer following "%s"' % username)
+    	flash('You are no longer following %s' % username)
     else:
-	    flash('You are not currently following "%s"' % username)
+	    flash('You are not currently following %s' % username)
 
     return redirect(url_for('user_timeline', username=username))
 

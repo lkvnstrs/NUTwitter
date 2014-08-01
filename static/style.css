@@ -1,0 +1,67 @@
+#main_title {
+	font-weight: lighter;
+	padding-bottom: 20px;
+}
+
+section {
+  overflow: auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.center {
+  text-align: center;
+}
+
+.form_heading {
+	padding-top: 20px;
+}
+
+.align_left {
+	float: left;
+}
+
+.align_right {
+	float: right;
+}
+
+.flashes {
+	background-color: #CCFFCC;
+	text-align: center;
+}
+
+.posts {
+	list-style-type: none;
+	float: right;
+}
+
+.post {
+	border: 1px solid #bbb;
+	-moz-box-sizing: border-box;
+  	-webkit-box-sizing: border-box;
+  	box-sizing: border-box;  
+}
+
+#post_text {
+	float: right;
+}
+
+.line_border {
+	border: 1px solid #bbb;
+}
+
+/* forms */
+input, textarea, select{
+  border: 1px solid #bbb;
+  font-size: 17px;
+  width: 100%;
+  height: auto;
+  margin-bottom: 15px;
+
+}
+
+#error_explanation {
+  color: #f00;
+}

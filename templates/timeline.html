@@ -11,38 +11,42 @@
 	{% endif %}
 {% endblock %}
 {% block body %}
-	<h2>{{ self.title() }}</h2>
+<div class="container">
+	<h1>{{ self.title() }}</h1>
 	{% if request.endpoint == 'user_timeline' %}
-	<div class=followstatus>
-		{% if g.user.id == profile_user.id %}
-			This is you
-		{% elif followed %}
-			You are currently following this user
-			<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
-		{% else %}
-			You are not currently following this user
-			<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
-		{% endif %}
-	</div>
+		<div>
+			{% if g.user.id == profile_user.id %}
+				This is you
+			{% elif followed %}
+				You are currently following this user
+				<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+			{% else %}
+				You are not currently following this user
+				<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+			{% endif %}
+		</div>
 	{% elif request.endpoint == 'timeline' %}
-		<div class=twitbox>
+		<div class="col-md-4 line_border" style="float: left;">
 			<h3>What's on your mind, {{ g.user.username}}?</h3>
 			<form action="{{ url_for('add_post') }}" method=POST>
-				<p><input type=text name=text size=140><input type=submit value='Share'></p>
+				<input type=text name=text size=140><input type=submit value='Share'>
 			</form>
 		</div>
 	{% endif %}
-	<ul class=posts>
-		{% for post in posts %}
-		<li><img src="{{ post.user.email|gravatar(size=48) }}"><p>
+
+	<div class="col-md-8 col-md-offset-4" style="float: right;">
+	{% for post in posts %}
+		<div class="post">
+			<img src="{{ post.user.email|gravatar(size=48) }}"><p>
 			<strong>
 				<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
 			</strong>
-			{{ post.body }}
+			<p id="post_text">{{ post.body }}</p>
 			<small>{{ post.pub_date | datetimeformat }}</small>
-			{{ post.user.email }}
-		{% else %}
-			<li><em>There are no messages so far.</em>
-		{% endfor %}
-	</ul>
+		</div>
+	{% else %}
+		<em>There are no messages so far.</em>
+	{% endfor %}
+	</div>
+</div>
 {% endblock %}
