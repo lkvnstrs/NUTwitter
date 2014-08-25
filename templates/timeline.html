@@ -13,36 +13,36 @@
 {% block body %}
 <div class="container">
 	<h1>{{ self.title() }}</h1>
+	<div class="col-md-4 line_border">
 	{% if request.endpoint == 'user_timeline' %}
-		<div>
-			{% if g.user.id == profile_user.id %}
-				This is you
-			{% elif followed %}
-				You are currently following this user
-				<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
-			{% else %}
-				You are not currently following this user
-				<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
-			{% endif %}
-		</div>
+		{% if g.user.id == profile_user.id %}
+			This is you
+		{% elif followed %}
+			You are currently following this user
+			<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+		{% else %}
+			You are not currently following this user
+			<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+		{% endif %}
 	{% elif request.endpoint == 'timeline' %}
-		<div class="col-md-4 line_border" style="float: left;">
-			<h3>What's on your mind, {{ g.user.username}}?</h3>
-			<form action="{{ url_for('add_post') }}" method=POST>
-				<input type=text name=text size=140><input type=submit value='Share'>
-			</form>
-		</div>
+		<h3>What's on your mind, {{ g.user.username}}?</h3>
+		<form action="{{ url_for('add_post') }}" method=POST>
+			<input type=text name=text size=140><input type=submit value='Share'>
+		</form>
 	{% endif %}
+	</div>
 
-	<div class="col-md-8 col-md-offset-4" style="float: right;">
+	<div class="col-md-8 col-md-offset-4">
 	{% for post in posts %}
-		<div class="post">
-			<img src="{{ post.user.email|gravatar(size=48) }}"><p>
-			<strong>
-				<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
-			</strong>
-			<p id="post_text">{{ post.body }}</p>
-			<small>{{ post.pub_date | datetimeformat }}</small>
+		<div class="col-xs-1 align_left">
+			<img src="{{ post.user.email|gravatar(size=48) }}">
+		</div>
+		<div class="col-xs-11 col-xs-offset-1 align_right">
+			<strong class="align_left">
+			<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
+			</strong><br>
+			<p class="align_left">{{ post.body }}</p>
+			<small class="align_right">{{ post.pub_date | datetimeformat }}</small>
 		</div>
 	{% else %}
 		<em>There are no messages so far.</em>

@@ -19,6 +19,10 @@ textarea {
 	padding-top: 20px;
 }
 
+.thumbnail {
+	float: left;
+}
+
 .align_left {
 	float: left;
 }
@@ -37,15 +41,16 @@ textarea {
 	float: right;
 }
 
+.post_content {
+	padding: 20px, 20px, 20px, 20px;
+}
+
 .post {
+	padding-bottom: 20px;
 	border: 1px solid #bbb;
 	-moz-box-sizing: border-box;
   	-webkit-box-sizing: border-box;
   	box-sizing: border-box;  
-}
-
-#post_text {
-	float: right;
 }
 
 .line_border {
