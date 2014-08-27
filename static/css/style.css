@@ -1,0 +1,73 @@
+h1, h2, h3 {
+	font-weight: lighter;
+}
+
+section {
+  	overflow: auto;
+}
+
+textarea {
+  	resize: vertical;
+}
+
+.body-content {
+  	margin-top: 50px;
+}
+
+/* characteristics */
+
+.center {
+  	text-align: center;
+}
+
+.float {
+	position: fixed;
+}
+
+/* photos */
+
+.photos {
+	margin-top: 60px;
+}
+
+.description {
+	background-color: rgb(231, 231, 231);
+	padding-top: 10px;
+	padding-bottom: 1px; 
+	padding-left: 10px;
+}
+
+.box {
+	background-color: rgb(231, 231, 231);
+	border: 1px solid #bbb;
+	padding-bottom: 20px;
+}
+
+.stream {
+	padding-bottom: 20px
+}
+
+/* flashes */
+.flashes {
+	background-color: #CCFFCC;
+	text-align: center;
+}
+
+/* forms */
+.form_heading {
+	font-weight: lighter;
+	font-size: 50px;
+}
+
+input, textarea, select{
+  	border: 1px solid #bbb;
+  	font-size: 17px;
+  	width: 100%;
+  	height: auto;
+  	margin-bottom: 15px;
+
+}
+
+#error_explanation {
+  	color: #f00;
+}

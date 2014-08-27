@@ -7,45 +7,70 @@
 			{{ profile_user.username }}'s Profile
 		{% endif %}
 	{% else %}
-		News Feed
+		News feed
 	{% endif %}
 {% endblock %}
 {% block body %}
 <div class="container">
-	<h1>{{ self.title() }}</h1>
-	<div class="col-md-4 line_border">
-	{% if request.endpoint == 'user_timeline' %}
-		{% if g.user.id == profile_user.id %}
-			This is you
-		{% elif followed %}
-			You are currently following this user
-			<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+
+	<div class="col-md-3 float">
+		<h1>{{ self.title() }}</h1>
+		{% if request.endpoint == 'user_timeline' %}
+			<img src="{{ g.user.email|gravatar(size=170) }}">
+			{% if g.user.id != profile_user.id %}
+				{% if followed %}
+					You are currently following this user
+					<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+				{% else %}
+					You are not currently following this user
+					<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+				{% endif %}
+			{% endif %}
 		{% else %}
-			You are not currently following this user
-			<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+			<div class="box col-md-2-offset col-md-10">
+				<h4>Post a Photo</h4>
+
+				<!--Check for/display errors-->
+				{% if error %}
+				<ul id="error_explanation">
+					<li>{{ error }}</li>
+				</ul>
+				{% endif %}
+
+				<form action="{{ url_for('add_photo') }}" method=POST enctype="multipart/form-data">
+					<p>Browse: </p><input type=file name=file>
+					<p>Description: </p><input type=text name=text size=140>
+					<div class="actions"><input class="btn btn-primary" type=submit value="Share"></div>
+				</form>
+			</div>
 		{% endif %}
-	{% elif request.endpoint == 'timeline' %}
-		<h3>What's on your mind, {{ g.user.username}}?</h3>
-		<form action="{{ url_for('add_post') }}" method=POST>
-			<input type=text name=text size=140><input type=submit value='Share'>
-		</form>
-	{% endif %}
 	</div>
 
-	<div class="col-md-8 col-md-offset-4">
-	{% for post in posts %}
-		<div class="col-xs-1 align_left">
-			<img src="{{ post.user.email|gravatar(size=48) }}">
+	<div class="col-md-offset-3 col-md-8 photos">
+	{% for photo in photos %}
+		<div class="col-md-3">
+			<div class="col-md-7">
+				<strong>
+					<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a><br>
+				</strong>
+				<small>{{ photo.pub_date | datetimeformat }}</small>
+			</div>
+			<div class="col-md-offset-7">
+				<a href="{{ url_for('user_timeline', username=photo.user.username) }}"><img src="{{ photo.user.email|gravatar(size=60) }}"></a>
+			</div>
+			
 		</div>
-		<div class="col-xs-11 col-xs-offset-1 align_right">
-			<strong class="align_left">
-			<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
-			</strong><br>
-			<p class="align_left">{{ post.body }}</p>
-			<small class="align_right">{{ post.pub_date | datetimeformat }}</small>
+		<div class="col-md-offset-3 stream">
+			<img src="{{ url_for('uploaded_file', filename=photo.filename) }}" width="100%">
+			<div class="description">
+				<strong>
+					<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a>
+				</strong>
+				<p>{{ photo.desc }}</p>
+			</div>
 		</div>
 	{% else %}
-		<em>There are no messages so far.</em>
+		<p>There are no photos so far.</p>
 	{% endfor %}
 	</div>
 </div>
