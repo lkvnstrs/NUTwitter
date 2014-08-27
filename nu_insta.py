@@ -111,8 +111,8 @@ def register():
             user = create_user(request.form['username'].lower(), request.form['email'].lower(), request.form['password'])
             flash('You were successfully registered')
             
-            # Redirect to the timeline
-            return redirect(url_for('timeline'))
+            # Redirect to the login
+            return redirect(url_for('login'))
 
     return render_template('register.html', errors=errors)
 
@@ -166,6 +166,7 @@ def add_photo():
     if 'user_id' not in session:
         abort(401)
 
+    error = None
     f = request.files['file']
     if f and allowed_file(f.filename):
         # Ensure the filename is secure
@@ -177,7 +178,7 @@ def add_photo():
     	create_photo(g.user, filename, request.form['text'])
         flash('Posted!')
     else:
-        print "darn"
+        error = "darn"
 
     return redirect(url_for('timeline'))
 

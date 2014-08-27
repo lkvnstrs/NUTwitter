@@ -13,21 +13,25 @@
 {% block body %}
 <div class="container">
 
-	<div class="col-md-3 float">
+	<div class="col-xs-3">
 		<h1>{{ self.title() }}</h1>
 		{% if request.endpoint == 'user_timeline' %}
-			<img src="{{ g.user.email|gravatar(size=170) }}">
+			<p class="center"><img  src="{{ profile_user.email|gravatar(size=250) }}"></p>
 			{% if g.user.id != profile_user.id %}
+
 				{% if followed %}
-					You are currently following this user
-					<a class=unfollow href="{{ url_for('unfollow_user', username=profile_user.username) }}">Unfollow</a>
+					<form action="{{ url_for('unfollow_user', username=profile_user.username) }}" method=GET>
+						<div class="actions"><input class="btn btn-danger btn-md" type=submit value="Unfollow"></div>
+					</form>
+				
 				{% else %}
-					You are not currently following this user
-					<a class=follow href="{{ url_for('follow_user', username=profile_user.username) }}">Follow</a>
+					<form action="{{ url_for('follow_user', username=profile_user.username) }}" method=GET>
+						<div class="actions"><input class="btn btn-primary btn-md" type=submit value="Follow"></div>
+					</form>
 				{% endif %}
 			{% endif %}
 		{% else %}
-			<div class="box col-md-2-offset col-md-10">
+			<div class="box col-md-12">
 				<h4>Post a Photo</h4>
 
 				<!--Check for/display errors-->
@@ -46,8 +50,10 @@
 		{% endif %}
 	</div>
 
-	<div class="col-md-offset-3 col-md-8 photos">
+	<div class="col-md-8 posts">
 	{% for photo in photos %}
+
+		<!-- User thumbnail and post time -->
 		<div class="col-md-3">
 			<div class="col-md-7">
 				<strong>
@@ -60,11 +66,17 @@
 			</div>
 			
 		</div>
-		<div class="col-md-offset-3 stream">
+
+		<!-- Post -->
+		<div class="col-md-offset-3 post">
+
+			<!-- Photo -->
 			<img src="{{ url_for('uploaded_file', filename=photo.filename) }}" width="100%">
+		
+			<!-- Description -->
 			<div class="description">
 				<strong>
-					<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a>
+				<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a>
 				</strong>
 				<p>{{ photo.desc }}</p>
 			</div>

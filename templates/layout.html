@@ -31,21 +31,22 @@
 		{% with messages = get_flashed_messages() %}
 			{% if messages %}
 				<div class="flashes">
-							<p>{{ ' | '.join(messages) }}</p>	
+						<p>{{ ' | '.join(messages) }}</p>	
 				</div>
 			{% endif %}
 		{% endwith %}
 
 		{% block body %}{% endblock %}
-
-		<div class="container">
-			<hr>
-			<footer>
-				<p style="float: left">NUInsta - Built as part of <a href="http://northeastern.io">Northeastern.io</a></p>
-				<p style="float: right">Directed by <a href="https://github.com/lkvnstrs">Luke Van Seters</a> and <a href="https://github.com/arjunblj">Arjun Balaji</a>
-			</footer>
-		</div>
-
 	</div>
+	
+	<div class="container footer">
+		<hr>
+		<footer>
+			<p style="float: left">NUInsta - Built as part of <a href="http://northeastern.io">Northeastern.io</a></p>
+			<p style="float: right">Directed by <a href="https://github.com/lkvnstrs">Luke Van Seters</a> and <a href="https://github.com/arjunblj">Arjun Balaji</a>
+		</footer>
+	</div>
+
+	
 </body>
 </html>
