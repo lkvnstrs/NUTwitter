@@ -13,12 +13,23 @@
 {% block body %}
 <div class="container">
 
-	<div class="col-xs-3">
+	<div class="col-md-3">
 		<h1>{{ self.title() }}</h1>
 		{% if request.endpoint == 'user_timeline' %}
 			<p class="center"><img  src="{{ profile_user.email|gravatar(size=250) }}"></p>
-			{% if g.user.id != profile_user.id %}
+			
+			<!-- Followers-->
+			<div class="col-md-6 center box">
+				Followers: {{ followers }}
+			</div>
 
+			<!-- Following -->
+			<div class="col-md-offset-6 center box">
+				Following: {{ followings }}
+			</div>
+
+			<!-- Follow/Unfollow buttons -->
+			{% if g.user.id != profile_user.id %}
 				{% if followed %}
 					<form action="{{ url_for('unfollow_user', username=profile_user.username) }}" method=GET>
 						<div class="actions"><input class="btn btn-danger btn-md" type=submit value="Unfollow"></div>
@@ -32,7 +43,7 @@
 			{% endif %}
 		{% else %}
 			<div class="box col-md-12">
-				<h4>Post a Photo</h4>
+				<h4>What's on your mind?</h4>
 
 				<!--Check for/display errors-->
 				{% if error %}
@@ -41,9 +52,8 @@
 				</ul>
 				{% endif %}
 
-				<form action="{{ url_for('add_photo') }}" method=POST enctype="multipart/form-data">
-					<p>Browse: </p><input type=file name=file>
-					<p>Description: </p><input type=text name=text size=140>
+				<form action="{{ url_for('add_post') }}" method=POST enctype="multipart/form-data">
+					</p><input type=textarea name=text size=140>
 					<div class="actions"><input class="btn btn-primary" type=submit value="Share"></div>
 				</form>
 			</div>
@@ -51,38 +61,27 @@
 	</div>
 
 	<div class="col-md-8 posts">
-	{% for photo in photos %}
-
-		<!-- User thumbnail and post time -->
-		<div class="col-md-3">
-			<div class="col-md-7">
-				<strong>
-					<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a><br>
-				</strong>
-				<small>{{ photo.pub_date | datetimeformat }}</small>
-			</div>
-			<div class="col-md-offset-7">
-				<a href="{{ url_for('user_timeline', username=photo.user.username) }}"><img src="{{ photo.user.email|gravatar(size=60) }}"></a>
-			</div>
-			
-		</div>
+	{% for post in posts %}
 
 		<!-- Post -->
-		<div class="col-md-offset-3 post">
+		<div class="post">
+			
+			<!-- User thumbnail -->
+			<div class="col-md-2">
+				<a href="{{ url_for('user_timeline', username=post.user.username) }}"><img src="{{ post.user.email|gravatar(size=60) }}"></a>
+			</div>
 
-			<!-- Photo -->
-			<img src="{{ url_for('uploaded_file', filename=photo.filename) }}" width="100%">
-		
-			<!-- Description -->
+			<!-- Content -->
 			<div class="description">
 				<strong>
-				<a href="{{ url_for('user_timeline', username=photo.user.username) }}">{{ photo.user.username }}</a>
+				<a href="{{ url_for('user_timeline', username=post.user.username) }}">{{ post.user.username }}</a>
 				</strong>
-				<p>{{ photo.desc }}</p>
+				<small>{{ post.pub_date | datetimeformat }}</small>
+				<p>{{ post.body }}</p>
 			</div>
 		</div>
 	{% else %}
-		<p>There are no photos so far.</p>
+		<p>There are no posts so far.</p>
 	{% endfor %}
 	</div>
 </div>

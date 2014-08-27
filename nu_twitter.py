@@ -1,26 +1,21 @@
 from flask import Flask, request, session, url_for, redirect, \
-	render_template, abort, g, flash, send_from_directory
+	render_template, abort, g, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
-from werkzeug import secure_filename
 import hashlib
 import uuid
-import os
 
 # CONFIG #
-DATABASE = 'sqlite:///./nu_insta.db'
+DATABASE = 'sqlite:///./nu_twitter.db'
 SECRET_KEY = 'shhdonttell' # flask.session requires this
 PER_PAGE = 30
 DEBUG = True
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 # APP #
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE
 app.config['DEBUG'] = DEBUG
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
 
 # CONTROLLER #
@@ -33,16 +28,17 @@ def before_request():
 
 @app.route('/')
 def timeline():
-    """Shows a users timeline or redirect to the splash page. Show's photos by the user and his/her followers"""
+    """Shows a users timeline or redirect to the splash page. Show's posts by the user and his/her followers"""
     if not g.user:
         return render_template('splash.html')
 
     # Get a list of the logged-in user's id and his/her followings
     # This is probably the hardest database thing you'll have to do for this project, so ask many questions
     user_ids = [session['user_id']] + [f.whom_id for f in db.session.query(followers).all() if f.who_id == session['user_id']]
-    conditions = ['Photo.user_id == %s' % (u,) for u in user_ids]
+    conditions = ['Post.user_id == %s' % (u,) for u in user_ids]
     condition = ' OR '.join(conditions)
-    return render_template('timeline.html', photos=db.session.query(Photo).filter(condition).order_by(Photo.pub_date.desc()).limit(PER_PAGE).all())
+
+    return render_template('timeline.html', posts=db.session.query(Post).filter(condition).order_by(Post.pub_date.desc()).limit(PER_PAGE).all())
 
 @app.route('/<username>')
 def user_timeline(username):
@@ -54,8 +50,12 @@ def user_timeline(username):
     followed = False
     if g.user:
         followed = db.session.query(followers).filter_by(who_id=session['user_id'], whom_id=profile_user.id).first() is not None
-    return render_template('timeline.html', photos=profile_user.photos.order_by(Photo.pub_date.desc()).limit(PER_PAGE), 
-    	followed=followed, profile_user=profile_user)
+    
+    num_followers = len(db.session.query(followers).filter_by(whom_id=profile_user.id).all())
+    num_followings = len(db.session.query(followers).filter_by(who_id=profile_user.id).all())
+    
+    return render_template('timeline.html', posts=profile_user.posts.order_by(Post.pub_date.desc()).limit(PER_PAGE), 
+    	followed=followed, profile_user=profile_user, followers=num_followers, followings=num_followings)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -160,37 +160,17 @@ def unfollow_user(username):
 
     return redirect(url_for('user_timeline', username=username))
 
-@app.route('/add_photo', methods=['POST'])
-def add_photo():
-    """Registers a new photo for the user."""
+@app.route('/add_message', methods=['POST'])
+def add_post():
+    """Registers a new message for the user."""
     if 'user_id' not in session:
         abort(401)
-
-    error = None
-    f = request.files['file']
-    if f and allowed_file(f.filename):
-        # Ensure the filename is secure
-        filename = secure_filename(f.filename)
-
-        # Change the filename to a combination of random hex values
-        filename = uuid.uuid4().hex + '_' + uuid.uuid4().hex + '.' + (filename.rsplit('.', 1)[1]).lower()
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    	create_photo(g.user, filename, request.form['text'])
+    if request.form['text']:
+        create_post(g.user, request.form['text'])
         flash('Posted!')
-    else:
-        error = "darn"
-
     return redirect(url_for('timeline'))
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 # USEFUL METHODS #
-
-def allowed_file(filename):
-     return '.' in filename and (filename.rsplit('.', 1)[1]).lower() in ALLOWED_EXTENSIONS
-
 def create_user(username, email, password):
 	"""Creates a user"""
 	password_digest, salt = digest_password(password)
@@ -199,12 +179,12 @@ def create_user(username, email, password):
 	db.session.commit()
 	return u
 
-def create_photo(user, path, desc, pub_date=None):
-	"""Creates a photo post"""
-	p = Photo(user, path, desc, pub_date)
-	db.session.add(p)
-	db.session.commit()
-	return p
+def create_post(user, body, pub_date=None):
+    """Creates a post"""
+    p = Post(user, body, pub_date)
+    db.session.add(p)
+    db.session.commit()
+    return p
 
 def digest_password(pw):
 	"""Hashes the password. Returns the hashed password and the salt used"""
@@ -231,7 +211,6 @@ def is_following(follower_user, followed_user):
 # JINJA FILTERS #
 app.jinja_env.filters['datetimeformat'] = format_datetime
 app.jinja_env.filters['gravatar'] = gravatar_url
-app.jinja_env.filters['filepath'] = uploaded_file
 
 # MODELS #
 
@@ -263,27 +242,26 @@ class User(db.Model):
 	def __repr__(self):
 		return '<User %r>' % self.username
 
-class Photo(db.Model):
-    """A photo table"""
+class Post(db.Model):
+    """A post table"""
     id = db.Column(db.Integer, primary_key=True)
-    desc = db.Column(db.Text)
-    filename = db.Column(db.String(150), unique=True)
+    body = db.Column(db.Text)
     pub_date = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User', backref=db.backref('photos', lazy='dynamic'))
 
-    def __init__(self, user, filename, desc, pub_date=None):
-    	self.desc = desc
-        self.filename = filename
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('posts', lazy='dynamic'))
+
+    def __init__(self, user, body, pub_date=None):
+        self.body = body
 
         if pub_date is None:
-    		pub_date = datetime.utcnow()
+            pub_date = datetime.utcnow()
 
         self.pub_date = pub_date
         self.user = user
 
     def __repr__(self):
-    	return '<Photo %r>' % self.filename
+        return '<Post %r>' % self.id
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=5000)
