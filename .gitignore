@@ -1,1 +1,7 @@
-*.db
+*.pyc
+bin/*
+include/*
+lib/*
+.DS_Store
+.Python
+nu_twitter.db
