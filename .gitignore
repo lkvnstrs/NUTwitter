@@ -5,3 +5,5 @@ lib/*
 .DS_Store
 .Python
 nu_twitter.db
+pip-selfcheck.json
+.DS_Store
